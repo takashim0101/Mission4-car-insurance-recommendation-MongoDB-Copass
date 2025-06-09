@@ -1,0 +1,14 @@
+ # .gitignore for car-insurance-deployment repository
+
+    # Ignore actual sensitive environment variables
+    .env
+
+    # Ignore temporary files, logs, etc.
+    *.log
+    tmp/
+    temp/
+
+    # Ignore Docker-related temporary/cache files
+    .dockerignore
+    Dockerfile # This repo contains docker-compose, not individual Dockerfiles, so ignore any accidental ones
+    
