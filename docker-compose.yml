@@ -1,78 +1,45 @@
-# docker-compose.yml for C:\Level 5\Mission4_MongoDB_Integration\
+version: "3.8"
 
 services:
-
-  # MongoDB database service
-  mongodb:
-    # Use the official MongoDB image
-    image: mongo:latest
-    # Set a unique container name for this environment
-    container_name: insurance-mongodb-new
-    # Map host port 27018 to container port 27017
-    # This avoids conflict with the existing environment's 27017
-    ports:
-      - "27018:27017"
-    # Set environment variables for MongoDB authentication
-    # These will be read from your .env file
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-    # Set volumes for data persistence
-    # Use a unique volume name for this environment
-    volumes:
-      - mongodb_data_new:/data/db # Use a unique volume name
-    # Automatically restart container if it crashes
-    restart: always
-    # Assign this service to our custom network
-    networks:
-      - app-network
-
   # Backend service
   backend:
-    # Specify the directory where Dockerfile exists
     build: ./car-insurance-recommendation-backend-docker
-    # Map host port 3001 to container port 3000
-    # This avoids conflict with the existing environment's 3000
     ports:
-      - "3001:3000"
-    # Setting environment variables (e.g., for Google API Key)
+      - "3000:3000"
     environment:
-      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
-    # Automatically restart container if crashed
+      GOOGLE_API_KEY: "YOUR_ACTUAL_GOOGLE_API_KEY"
+      MONGO_URI: "mongodb://myappuser:takashi123@mongodb:27017/insuranceDB?authSource=insuranceDB"
     restart: always
-    # Set a unique container name for this environment
-    container_name: insurance-backend-new
-    # Declare dependency on the new MongoDB service
+    container_name: insurance-backend
     depends_on:
       - mongodb
-    # Assign this service to our custom network
-    networks:
-      - app-network
 
-  # Frontend service (serving React app with Nginx)
+  # Frontend service
   frontend:
-    # Specify the directory where Dockerfile exists
     build: ./car-insurance-recommendation-frontend-docker
-    # Map host port 8080 to container port 80
-    # This avoids conflict with the existing environment's 80
     ports:
-      - "8080:80"
-    # Declare dependency on the new backend service
+      - "80:80"
     depends_on:
       - backend
-    # Automatically restart container if crashed
     restart: always
-    # Set a unique container name for this environment
-    container_name: insurance-frontend-new
-    # Assign this service to our custom network
-    networks:
-      - app-network
+    container_name: insurance-frontend
 
-# Volume definition for persistent MongoDB data
+  # MongoDB service
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: myappuser
+      MONGO_INITDB_ROOT_PASSWORD: takashi123
+    restart: always
+    container_name: insurance-mongodb
+
+# Named volume for MongoDB persistent data
 volumes:
-  mongodb_data_new: {} # Define the unique volume name
+  mongodb_data:
 
-# Network definition for inter-service communication
-networks:
-  app-network:
-    driver: bridge
+
