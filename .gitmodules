@@ -3,4 +3,4 @@
     url = https://github.com/takashim0101/car-insurance-recommendation-backend-docker.git
 [submodule "car-insurance-recommendation-frontend-docker"]
     path = car-insurance-recommendation-frontend-docker
-    url = https://github.com/takashim0101/car-insurance-recommendation-backend-docker.git
+    url = https://github.com/takashim0101/car-insurance-recommendation-frontend-docker.git
